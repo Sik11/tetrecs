@@ -1,12 +1,14 @@
 package uk.ac.soton.comp1206;
 
 import javafx.application.Application;
+import javafx.scene.media.MediaPlayer;
 import javafx.stage.Stage;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import uk.ac.soton.comp1206.ui.GameWindow;
+import uk.ac.soton.comp1206.ui.Multimedia;
 
 /**
  * JavaFX Application class
@@ -54,6 +56,7 @@ public class App extends Application {
      */
     public void openGame() {
         logger.info("Opening game window");
+        Multimedia.playBackgroundMusic("music/game.wav");
 
         //Change the width and height in this class to change the base rendering resolution for all game parts
         var gameWindow = new GameWindow(stage,width,height);

@@ -118,7 +118,7 @@
 }
 
 .scoreitem {
-
+    -fx-fill: white;
 }
 
 .scorer {
@@ -134,6 +134,7 @@
 }
 
 .points {
+    -fx-fill: white;
 }
 
 .channelList {
@@ -151,6 +152,10 @@
 .channelItem.selected {
     -fx-fill: yellow;
 }
+.channelItem:hover {
+    -fx-fill: yellow;
+}
+
 
 .leaderboard {
     -fx-font-size: 16px;
@@ -164,12 +169,20 @@
 }
 
 .scroller {
-    -fx-background-color: transparent;
+    -fx-background-color: rgba(1,1,1,0.5);
 }
 
 .scroller .viewport {
     -fx-background-color: transparent;
 }
+
+.scroll-pane TEXT{
+    -fx-strikethrough: true;
+}
+
+ #cancel{
+     -fx-strikethrough: true;
+ }
 
 .messages {
     -fx-background-color: transparent;
@@ -200,7 +213,9 @@ TextField {
 
 .myname {
     -fx-font-weight: 700;
+    -fx-fill: white;
 }
+
 
 .instructions {
     -fx-font-size: 10px;

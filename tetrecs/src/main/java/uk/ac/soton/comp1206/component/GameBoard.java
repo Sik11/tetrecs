@@ -1,10 +1,14 @@
 package uk.ac.soton.comp1206.component;
 
+import java.util.HashSet;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import uk.ac.soton.comp1206.event.BlockClickedListener;
+import uk.ac.soton.comp1206.event.ClickedListener;
 import uk.ac.soton.comp1206.game.Grid;
 
 /**
@@ -19,7 +23,7 @@ import uk.ac.soton.comp1206.game.Grid;
  */
 public class GameBoard extends GridPane {
 
-    private static final Logger logger = LogManager.getLogger(GameBoard.class);
+    protected static final Logger logger = LogManager.getLogger(GameBoard.class);
 
     /**
      * Number of columns in the board
@@ -55,6 +59,10 @@ public class GameBoard extends GridPane {
      * The listener to call when a specific block is clicked
      */
     private BlockClickedListener blockClickedListener;
+    /**
+     * The listener to call when a board is clicked
+     */
+    private ClickedListener clickedListener;
 
 
     /**
@@ -90,6 +98,7 @@ public class GameBoard extends GridPane {
         this.height = height;
         this.grid = new Grid(cols,rows);
 
+
         //Build the GameBoard
         build();
     }
@@ -117,11 +126,33 @@ public class GameBoard extends GridPane {
 
         blocks = new GameBlock[cols][rows];
 
+        clicked();
+
         for(var y = 0; y < rows; y++) {
             for (var x = 0; x < cols; x++) {
                 createBlock(x,y);
             }
         }
+    }
+
+    /**
+     * fadeOut all the coordinates in the array passed
+     * @param coordinates coordinates to fade out.
+     */
+    public void fadeOut(GameBlockCoordinate[] coordinates){
+        for (GameBlockCoordinate coordinate: coordinates){
+            getBlock(coordinate.getX(),coordinate.getY()).fadeOut();
+        }
+    }
+
+    /**
+     * Mouse click handler to the board to trigger clicked method
+     */
+    public void clicked(){
+        this.setOnMouseClicked((e) -> {
+            if (e.getButton() != MouseButton.SECONDARY) return;
+            clicked(e, this);
+        });
     }
 
     /**
@@ -146,9 +177,36 @@ public class GameBoard extends GridPane {
         block.bind(grid.getGridProperty(x,y));
 
         //Add a mouse click handler to the block to trigger GameBoard blockClicked method
-        block.setOnMouseClicked((e) -> blockClicked(e, block));
-
+        block.setOnMouseClicked((e) -> {
+            if(e.getButton() == MouseButton.SECONDARY) return;
+            logger.info(e.getButton());
+            blockClicked(e, block);
+        });
+        outline(block);
         return block;
+    }
+
+    /**
+     * Get the grid of the GameBoard
+     * @return grid
+     */
+    public Grid getGrid() {
+        return grid;
+    }
+
+
+    /**
+     * Outline GameBlock
+     * @param block block to be outlined
+     */
+    private void outline(GameBlock block){
+        block.setOnMouseEntered(event -> {
+            block.outline();
+        });
+
+        block.setOnMouseExited(event -> {
+            block.clearOutline();
+        });
     }
 
     /**
@@ -159,6 +217,8 @@ public class GameBoard extends GridPane {
         this.blockClickedListener = listener;
     }
 
+
+
     /**
      * Triggered when a block is clicked. Call the attached listener.
      * @param event mouse event
@@ -166,10 +226,46 @@ public class GameBoard extends GridPane {
      */
     private void blockClicked(MouseEvent event, GameBlock block) {
         logger.info("Block clicked: {}", block);
-
+        logger.info(event.getButton());
         if(blockClickedListener != null) {
             blockClickedListener.blockClicked(block);
         }
     }
 
+    /**
+     * Set the listener to handle an event when a block is clicked
+     * @param listener listener to add
+     */
+    public void setOnClicked(ClickedListener listener){
+        this.clickedListener = listener;
+    }
+
+    /**
+     * Triggered when a block is clicked. Call the attached listener.
+     * @param event mouse event
+     * @param board board that was clicked
+     */
+    private void clicked(MouseEvent event, GameBoard board){
+        logger.info(event.getButton());
+        if(clickedListener != null) {
+            clickedListener.clicked(board);
+        }
+    }
+
+
+    /**
+     * Get the number of Rows
+     * @return number of Rows
+     */
+    public int getRows() {
+        return rows;
+    }
+
+    /**
+     * Get the number of Columns
+     * @return number of Columns
+     */
+    public int getCols() {
+        return cols;
+    }
 }
